@@ -8,6 +8,8 @@ import twitter4j.TwitterStream;
 import twitter4j.TwitterStreamFactory;
 import twitter4j.conf.ConfigurationBuilder;
 
+import org.json.*;
+
 /**
  * <p>This is a code example of Twitter4J Streaming API - sample method support.<br>
  * Usage: java twitter4j.examples.PrintSampleStream<br>
@@ -47,7 +49,19 @@ public class TweetGet {
             public void onStatus(Status status) {
             	
             	sqlmng.write(status);
-            	sqsmng.sendMessage(status.getText());
+            	double lon = status.getGeoLocation().getLongitude();
+            	double lat = status.getGeoLocation().getLatitude();
+            	JSONObject jo = new JSONObject();
+            	try{
+                	jo.put("lon", lon);
+                	jo.put("lat", lat);
+                	jo.put("text", status.getText());
+            	}catch (Exception e){
+            		e.printStackTrace();
+            	}
+
+            	String message = jo.toString();
+            	sqsmng.sendMessage(message);
             	System.out.println("usrID:"+usr_id);
             	usr_id++;
 
