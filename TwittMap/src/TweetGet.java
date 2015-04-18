@@ -21,7 +21,9 @@ public class TweetGet {
      *
      * @param args
      */
-	public static SQLManager sqlmng=null;
+	public static SQLManager sqlmng = null;
+	public static SQSManager sqsmng = null;
+	
 	
     public static void main(String[] args) throws TwitterException {
     	//just fill this
@@ -32,8 +34,12 @@ public class TweetGet {
            .setOAuthAccessToken("2764495842-OzeuDh8ywoa1pcRXTW9n4AHOAJ6b7vuofmEjEyT")
            .setOAuthAccessTokenSecret("KmPymCCIUccFVx07ifEMEQzirkyS3i3JR5XKt6vnStk2P");
          
-         sqlmng=new SQLManager();
+         sqlmng = new SQLManager();
+         sqsmng = new SQSManager();
+         sqsmng.createQueue();
          TwitterStream twitterStream = new TwitterStreamFactory(cb.build()).getInstance();
+         
+         
          StatusListener listener = new StatusListener() {
         	long usr_id=0;
         	@Override
@@ -41,8 +47,11 @@ public class TweetGet {
             public void onStatus(Status status) {
             	
             	sqlmng.write(status);
+            	sqsmng.sendMessage(status.getText());
             	System.out.println("usrID:"+usr_id);
             	usr_id++;
+
+
                 //System.out.println(usr_id+" @" + status.getUser().getScreenName() + " - " + status.getText());
             }
 
