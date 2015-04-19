@@ -49,12 +49,14 @@ public class TweetGet {
             public void onStatus(Status status) {
             	
             	sqlmng.write(status);
+            	String kw = sqlmng.getKw(status);
             	double lon = status.getGeoLocation().getLongitude();
             	double lat = status.getGeoLocation().getLatitude();
             	JSONObject jo = new JSONObject();
             	try{
                 	jo.put("lon", lon);
                 	jo.put("lat", lat);
+                	jo.put("kw", kw);
                 	jo.put("text", status.getText());
             	}catch (Exception e){
             		e.printStackTrace();

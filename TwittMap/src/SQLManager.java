@@ -18,7 +18,6 @@ public class SQLManager {
     private String[] IT={"technology","tech","Internet","Cisco","AT&T","AWS","Google","iPhone","iPad","Samsung"};
     private String[] media={"media","CNN","ABC","BBC","NY Times","Time Warner","NBC","Netflix","CBS"};
     
-
 	public void connect(){
 		try {
 	    	try {
@@ -68,6 +67,26 @@ public class SQLManager {
 	    PreparedStatement ps=null;
 
 		java.sql.Timestamp date=new java.sql.Timestamp(status.getCreatedAt().getTime()+4*60*60*1000);
+		String kw=getKw(status);		
+		String sql="insert into tweetinfo values (?,?,?,?,?,?,?)";
+		try{
+			ps=conn.prepareStatement(sql);
+			//ps.setLong(1, usr_id);
+			ps.setLong(1, status.getId());
+			ps.setString(2, status.getUser().getScreenName());
+			ps.setString(3, kw);
+			ps.setString(4, status.getText());
+			ps.setTimestamp(5, date);
+			ps.setDouble(6, status.getGeoLocation().getLongitude());
+			ps.setDouble(7, status.getGeoLocation().getLatitude());
+			ps.executeUpdate();
+		}catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	}
+	
+	public String getKw(Status status){
 		String kw=null;
 		for (String str : sports){
 			if(status.getText().toLowerCase().contains(str.toLowerCase())){
@@ -86,24 +105,8 @@ public class SQLManager {
 				kw="media";
 				break;
 			}
-		}
-		
-		String sql="insert into tweetinfo values (?,?,?,?,?,?,?)";
-		try{
-			ps=conn.prepareStatement(sql);
-			//ps.setLong(1, usr_id);
-			ps.setLong(1, status.getId());
-			ps.setString(2, status.getUser().getScreenName());
-			ps.setString(3, kw);
-			ps.setString(4, status.getText());
-			ps.setTimestamp(5, date);
-			ps.setDouble(6, status.getGeoLocation().getLongitude());
-			ps.setDouble(7, status.getGeoLocation().getLatitude());
-			ps.executeUpdate();
-		}catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		}		
+		return kw;
 	}
 	
 	public ArrayList<TweetData> getData(int interval){

@@ -4,6 +4,7 @@
   
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TweetMap</title>
+    
     <style>
       #map-canvas {
 		width:66.6666%;
@@ -19,9 +20,16 @@
         width:380px;
         left:15px;
       }
+      
+      #Sentiment {
+      	position:absolute;
+      	top : 600px;
+        width:380px;
+        left:15px;
+      }
     </style>
-    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&libraries=visualization"></script>
     
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&libraries=visualization"></script>
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
@@ -34,36 +42,54 @@
 	var taxiData;
 	var websocket;
 	var init_time=24*60*60;
-	//var pointArray;
-	//var pointArray_sports;
-	//var pointArray_IT;
-	//var pointArray_media;
+	var all_pos = 0;
+	var all_neg = 0;
+	var sports_pos = 0;
+	var sports_neg = 0;
+	var IT_pos = 0;
+	var IT_neg = 0;
+	var media_pos = 0;
+	var media_pos = 0;
     
     function onOpen(evt) {
     	websocket.send(init_time);
     	//writeToScreen("Open success!");
     }
-    var count = 0;
+    //var count = 0;
+    
     function onMessage(evt) {
     	var data=JSON.parse(evt.data);
     	
 		pointArray.push(new google.maps.LatLng(data.lat,data.lon));
 		
+		if(data.senti=="positive"){
+			all_pos++;
+		}else if(data.senti=="negative"){
+			all_neg++;
+		}
+		
     	if(data.kw=="sports"){
     		pointArray_sports.push(new google.maps.LatLng(data.lat,data.lon));
+    		if(data.senti=="positive"){
+    			sports_pos++;
+    		}else if(data.senti=="negative"){
+    			sports_neg++;
+    		}
     	}else if(data.kw=="IT"){
     		pointArray_IT.push(new google.maps.LatLng(data.lat,data.lon));
+    		if(data.senti=="positive"){
+    			IT_pos++;
+    		}else if(data.senti=="negative"){
+    			IT_neg++;
+    		}
     	}else if(data.kw=="media"){
     		pointArray_media.push(new google.maps.LatLng(data.lat,data.lon));
+    		if(data.senti=="positive"){
+    			media_pos++;
+    		}else if(data.senti=="negative"){
+    			media_neg++;
+    		}
     	}
-    	/*
-    	count = count + 1;
-    	writeToScreen(count);
-    	/*
-    	document.getElementById("check").innerHTML=pointArray.length;
-    	document.getElementById("check1").innerHTML=pointArray_sports.length;
-    	document.getElementById("check2").innerHTML=pointArray_IT.length;
-    	document.getElementById("check3").innerHTML=pointArray_media.length;*/
     	
     }
     function onError(evt) {
@@ -77,24 +103,32 @@
     	switch (val) {
     		case "all":
     			heatmap.setMap(map);
+    			document.getElementById("positive").innerHTML = "Positive results for all tweets: " + all_pos;
+    			document.getElementById("negative").innerHTML = "Negative results for all tweets: " + all_neg;
     			heatmap_IT.setMap(null);
     			heatmap_sports.setMap(null);
     			heatmap_media.setMap(null);
     			break;
     		case "IT":
     			heatmap_IT.setMap(map);
+    			document.getElementById("positive").innerHTML = "Positive results for IT tweets: " + IT_pos;
+    			document.getElementById("negative").innerHTML = "Negative results for IT tweets: " + IT_neg;
     			heatmap.setMap(null);
     			heatmap_sports.setMap(null);
     			heatmap_media.setMap(null);
     			break;
     		case "sports":
     			heatmap_sports.setMap(map);
+    			document.getElementById("positive").innerHTML = "Positive results for sports tweets: " + sports_pos;
+    			document.getElementById("negative").innerHTML = "Negative results for sports tweets: " + sports_neg;
     			heatmap_IT.setMap(null);
     			heatmap.setMap(null);
     			heatmap_media.setMap(null);
     			break;
     		case "media":
     			heatmap_media.setMap(map);
+    			document.getElementById("positive").innerHTML = "Positive results for media tweets: " + media_pos;
+    			document.getElementById("negative").innerHTML = "Negative results for media tweets: " + media_neg;
     			heatmap_IT.setMap(null);
     			heatmap_sports.setMap(null);
     			heatmap.setMap(null);
@@ -136,43 +170,9 @@
 		heatmap_media=new google.maps.visualization.HeatmapLayer({data: pointArray_media});
 		
 		heatmap.setMap(map);
-		/*
-		heatmap_sports.setMap(map);
-		heatmap_IT.setMap(map);
-		heatmap_media.setMap(map);*/
+
 	}
-	/*
-	function toggleHeatmap() {
-		heatmap.setMap(heatmap.getMap() ? null : map);
-	}
-	
-	function changeGradient() {
-		var gradient = [
-    	'rgba(0, 255, 255, 0)',
-    	'rgba(0, 255, 255, 1)',
-    	'rgba(0, 191, 255, 1)',
-    	'rgba(0, 127, 255, 1)',
-    	'rgba(0, 63, 255, 1)',
-    	'rgba(0, 0, 255, 1)',
-    	'rgba(0, 0, 223, 1)',
-    	'rgba(0, 0, 191, 1)',
-    	'rgba(0, 0, 159, 1)',
-    	'rgba(0, 0, 127, 1)',
-    	'rgba(63, 0, 91, 1)',
-    	'rgba(127, 0, 63, 1)',
-    	'rgba(191, 0, 31, 1)',
-    	'rgba(255, 0, 0, 1)'
-  		]	
-		heatmap.set('gradient', heatmap.get('gradient') ? null : gradient);
-	}
-	
-	function changeRadius() {
-		heatmap.set('radius', heatmap.get('radius') ? null : 20);
-	}	
-	function changeOpacity() {
-		heatmap.set('opacity', heatmap.get('opacity') ? null : 0.2);
-	}
-	*/
+
 	function writeToScreen(message) {
         var pre = document.createElement("p");
         pre.style.wordWrap = "break-word";
@@ -181,10 +181,12 @@
     }
 	
 	google.maps.event.addDomListener(window, 'load', initialize);
+	/*
     setInterval(function() {
     	//console.log("test");
     	websocket.send(1);
     }, 1000*1);
+	*/
 
     </script>
   </head>
@@ -197,17 +199,26 @@
   	</div>
     
   </div>
-      <div id="panel">
-        <h2>Keywords Filter</h2>
-        <br>
-        <br>
-        <select id="filter" class="form-control" onChange="filter()">
-      	  <option value="all"> ALL </option>
-      	  <option value="sports"> SPORTS </option>
-      	  <option value="IT"> IT </option>
-      	  <option value="media"> MEDIA </option>
-        </select>   
-      </div>
+  <div id="panel">
+    <h2>Keywords Filter</h2>
+    <br>
+    <br>
+    <select id="filter" class="form-control" onChange="filter()">
+      <option value="all"> ALL </option>
+      <option value="sports"> SPORTS </option>
+      <option value="IT"> IT </option>
+      <option value="media"> MEDIA </option>
+    </select>   
+  </div>
+  
+  <div id = "Sentiment">
+  	<h2>Sentiment Analysis</h2>
+  	<br>
+  	<br>
+  	<p id = "positive"> pos </p>
+  	<p id = "negative"> neg </p>
+  	
+  </div>
 
   <div id="map-canvas">test</div>
   </body>
