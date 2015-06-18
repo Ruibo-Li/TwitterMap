@@ -31,10 +31,10 @@ public class TweetGet {
     	//just fill this
     	 ConfigurationBuilder cb = new ConfigurationBuilder();
          cb.setDebugEnabled(true)
-           .setOAuthConsumerKey("ITwpdvSB4eCYGz0kPDl4qyNVx")
-           .setOAuthConsumerSecret("QbEIDjnMi4RtbwjyyBXOkBk6DPmQUBcuYtyxFfBiX0mwhHSb87")
-           .setOAuthAccessToken("2764495842-OzeuDh8ywoa1pcRXTW9n4AHOAJ6b7vuofmEjEyT")
-           .setOAuthAccessTokenSecret("KmPymCCIUccFVx07ifEMEQzirkyS3i3JR5XKt6vnStk2P");
+           .setOAuthConsumerKey("")
+           .setOAuthConsumerSecret("")
+           .setOAuthAccessToken("")
+           .setOAuthAccessTokenSecret("");
          
          sqlmng = new SQLManager();
          sqsmng = new SQSManager();
