@@ -15,9 +15,9 @@ import org.json.*;
 public class APIService {
     private static CloseableHttpClient httpClient;
     private static APIService apiService;
-    //private String APIKey = "AIzaSyBvdMWKakXD-QBUN4P7c0obKSfGlQQeoxY";
-    //private String APIKey = "AIzaSyB076DorHlXHT0vzTsdZ7jBivcdoBX88Gs";
-    private String APIKey = "6f818436dd5b175e2eae01dc681460cce5334daf";
+    //private String APIKey = "";
+    //private String APIKey = "";
+    private String APIKey = "";
     private String base_URL = "http://access.alchemyapi.com/calls/text/TextGetTextSentiment";
 
     private APIService(String APIKey){
@@ -60,7 +60,7 @@ public class APIService {
         return jsonObject;
     }
     public static void main(String[] args) throws Exception{
-        APIService apiService = APIService.getInstanceWithKey("6f818436dd5b175e2eae01dc681460cce5334daf");
+        APIService apiService = APIService.getInstanceWithKey("");
         //JSONObject jsonObject = apiService.searchEntity("bill gates");
         //String s = jsonObject.getJSONObject("/architecture/architectural_structure_owner/structures_owned").getString("valuetype");
         String text = "I love you!";
